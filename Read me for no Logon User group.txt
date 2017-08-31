@@ -1,0 +1,17 @@
+***********Enable no Logon capability for user**********
+
+- Gpedit.msc
+- Computer Configuration\Windows Settings\Security Settings\Local Policies\User Rights Assignment
+
+- Double click on "Deny log on locally" policy
+- Add User or Groups
+- Click on object types, "Select the type object"
+- Enter object names, then check names
+- Click ok
+
+In my case I created a group and add in the policy.
+
+Later on, I will add the user whom I don't want to have logon capabilities.
+
+How to add users to localgroups?
+net localgroup <group name> <domain>\<username> /add

@@ -1,0 +1,18 @@
+**************Run your script at elevation permission***************
+Please refer first read me.txt.
+
+Some script may not required to run at elevated permission.
+
+In case required, Please follow below description:
+
+RunPowershellScriptWithElevation.ps1 script can pass another script with its arguments and executed in elevated permission mode.
+
+Pre-requisite:
+Disable UAC notification
+
+How it works:
+You can call it with exit or no exit mode:
+powershell -noexit ./RunPowershellScriptWithElevation.ps1 <Script with path> <Argument 1> <Argument 2>
+
+Warning:
+Disabling UAC is huge security bridge. Please secure machine from external network, maintain firewall integrity, maintain user access with confidentiality and trust.

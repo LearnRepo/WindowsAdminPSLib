@@ -1,0 +1,86 @@
+**************** UAC Prompt Disable *************
+Disable notification prompt for user under user account control. To run program on elevated right without prompt. This is the only way.
+
+*************** start-process with elevated right ******************
+Start-Process powershell -verb runas -ArgumentList "-file  ScriptFullPath"
+
+Start-Process powershell -Credential $cred -ArgumentList "-noexit", "-file  C:\Apache24\docs\admin\Components\CreateUser.ps1" 
+
+Start-Process powershell -verb runas -ArgumentList "-noexit", "-file  C:\Apache24\docs\admin\Components\CreateUser.ps1" #It will open new window, if you want run without display remove "-noexit"
+
+********** Few of this command required admin priviledge *************
+
+Run your script and It will prompt for password. It will allow you to run your script locally.
+
+
+1. runas /user:<Domain>\<username> "<Application> <Script> <Script arguments 1> <Script arguments 2> ..."
+
+     Eg:
+	runas /user:WIN-4O23NFSHDER\shasan "powershell C:\Apache24\docs\admin\Components\CreateUser.ps1 test pajisingh"
+
+Note: Give full path
+
+2. The following command starts an instance of a command prompt window, saved MMC console, Control Panel item, or program that will administer a server in another forest:
+
+runas /netonly /user:<Domain>\<User_Name> "<Command>"
+
+
+<Domain>\<User_Name> must be a user with sufficient permissions to administer the server. When prompted, type the account password.
+
+
+********** Few situation you want powershell to not exit after execution *********
+
+powershell -noexit d:\script\foo.ps1
+
+
+********** Another elevation method src(https://stackoverflow.com/questions/25247550/how-can-i-call-a-powershell-script-as-a-particular-user-from-the-windows-command) ******************
+
+The built-in command line application RUNAS
+
+The Windows Command Line RUNAS command would look like a good solution to your problem if you were able to specify the credentials.
+
+RUNAS  /user:user@domain.microsoft.com "powershell pshell.ps1"
+
+
+As you have said, however, you need to run this task from CONTROL-M, so this is not possible. It is also then not possible to run the task from Task Scheduler as I suggested in a comment and another answer has suggested.
+
+Therefore, my next suggestion is to use a PowerShell script to do this:
+
+The PowerShell scriptlet Invoke-Command
+
+Firstly, you need to enable Win-RM to allow this to work. To do so, type the following 
+in an elevated (i.e. run as administrator) command prompt:
+
+--------------------
+winrm quickconfig
+
+Note :  Go to services.msc and start Windows Remote Management service
+--------------------
+
+Next, write a script with the stored credentials you want. Note that this will be stored as plain text, so if you are not willing to do that you will need to look at using a secure credential file.
+
+----------------------------------------
+$username = "DOMAIN\User"
+$password = "Password"
+$secstr = New-Object -TypeName System.Security.SecureString
+$password.ToCharArray() | ForEach-Object {$secstr.AppendChar($_)}
+$cred = new-object -typename System.Management.Automation.PSCredential -argumentlist $username, $secstr
+Invoke-Command -FilePath "C:\Script\To\Execute.ps1" -Credential $cred -Computer localhost
+-----------------------------------------
+
+Naturally, you need to replace C:\Script\To\Execute.ps1 with the file path to your PowerShell script you want to run, and replace DOMAIN\User and Password with the user you want to run as and their password, respectively.
+
+This script will now run as the user specified above.
+
+However, you may be unwilling or unable to use a PowerShell script, and so your last solution rests in a third party application, such as:
+
+----------------------
+SysInternals PsExec
+----------------------
+
+PsExec is a completely free tool offered for download on TechNet specifically designed for running commands, applications, etc. on remote computers. It works perfectly well on the local machine and believe it or not, allows you to specify the specific user (and password!) you want the application to run with.
+
+Download and extract the application
+Put the application somewhere in your PATH attribute (SET PATH=C:\PsExec;%PATH% works, if you installed it to C:\PsExec)
+
+Run the command psexec -u DOMAIN\user -p password script.ps1 with the appropriate changes.

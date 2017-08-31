@@ -1,0 +1,25 @@
+#$username = $args[0]
+#$password = $args[1]
+
+$username = "test2"
+$password = "pajisingh"
+
+
+$block = {
+    if($username -ne $null -And $password -ne $null)
+    {
+    	net user /add "test2" "pajisingh"
+        write-host "User create successfully"
+    }
+    else
+    {
+    	Write-Error "username and password is needed!" > "Error.log"
+    }
+}
+
+$Admin = "WIN-4O23NFSHDER\shasan"
+$AdminPass = "pajisingh"
+$secstr = New-Object -TypeName System.Security.SecureString
+$AdminPass.ToCharArray() | ForEach-Object {$secstr.AppendChar($_)}
+$cred = new-object -typename System.Management.Automation.PSCredential -argumentlist $Admin, $secstr
+Invoke-Command -Scriptblock $block -Credential $cred -Computer localhost
