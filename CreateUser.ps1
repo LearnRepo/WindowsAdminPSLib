@@ -6,10 +6,10 @@ $password = $args[1]
 
 if($username -ne $null -And $password -ne $null)
 {
-    net user /add $username $password
-    write-host "User create successfully"
+    $msg = net user /add $username $password 2>&1;
+    write-host $msg;
 }
 else
 {
-    Write-Error "username and password is needed!" > "Error.log"
+    Write-host "username and password is needed!"
 }
