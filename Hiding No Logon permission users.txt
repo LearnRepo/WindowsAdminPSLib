@@ -1,0 +1,16 @@
+************Hiding No Logon permission users*************
+
+In regedit, Add new key "SpecialAccounts" at "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon".
+
+In regedit, Add new key "UserList" at "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\SpecialAccounts".
+
+In regedit, Add new DWORD 32 bit value name: <user profile name> value data : <0 to hide or 1 to show>
+
+
+Below for Add user username at key:
+
+REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\SpecialAccounts\UserList" /v test5 /t REG_DWORD /d 0
+
+Notice :  Please verify the keyname then value name
+
+REG QUERY "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\SpecialAccounts\UserList"

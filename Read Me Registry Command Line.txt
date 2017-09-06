@@ -1,0 +1,207 @@
+***********Some cases you need registry editing*********
+HREF : https://www.windowscentral.com/how-edit-registry-using-command-prompt-windows-10
+
+How to edit the Registry using Command Prompt
+
+Important: If you're planning to use these commands on your computer, make sure to understand that modifying the Registry is risky, and it can cause irreversible damage to your installation if you don't do it correctly. It's recommended to make a full backup of your computer before proceeding.
+
+To run reg.exe, you first need to start Command Prompt as an administrator with the following steps:
+
+Open Start. Search for Command Prompt. Right-click the result and select Run as administrator.
+
+To run the tool, type the following command and press Enter:
+
+reg /?
+
+This command will display all the operation types you can use, including:
+
+REG Query 
+REG Add 
+REG Delete 
+REG Copy 
+REG Save 
+REG Load 
+REG Unload 
+REG Restore 
+REG Compare 
+REG Export 
+REG Import 
+REG Flags
+
+Note: You can also use REG followed by the operation type and /? to get more help. For example, REG QUERY /? or REG ADD /?.
+
+You'll also get the return codes: 0 meaning that the operation completed successfully, and 1 indicating that the operation failed. However, you won't get any return codes using the Compare switch.
+
+
+
+While there a long list of possible command combinations, below we'll be listing the most useful commands to get started using reg.exe with Command Prompt.
+
+How to add and delete registry entries
+
+Syntax
+
+Add: REG ADD KeyName [{/v ValueName | /ve}] [/t Type] [/f] 
+
+Delete: REG DELETE KeyName [{/v ValueName | /ve | /va}] [/f]
+
+Command description
+
+KeyName: Defines the path to the subkey or entry. Valid registry key shortcuts include HKLM, HKCU, HKCR, HKU, and HKCC. 
+If you're trying to edit the registry on a remote computer, you can only use these shortcuts: HKLM and HKU. /v 
+ValueName: Specifies the name for the registry key to be added or deleted. /ve: Defines if you're adding or deleting an entry that has a null value.
+/t Type: Specifies the type of registry entries. Here's the list of valid types:
+
+REG_SZ 
+REG_MULTI_SZ 
+REG_DWORD_BIG_ENDIAN 
+REG_DWORD 
+REG_BINARY 
+REG_DWORD_LITTLE_ENDIAN 
+REG_LINK 
+REG_FULL_RESOURCE_DESCRIPTOR REG_EXPAND_SZ 
+/f: Adds or deletes registry content without prompting for confirmation. 
+/s Separator: Defines the character you use to separate multiple instances of data when the REG_MULTI_SZ data type is specified and you need to add more than one entry. 
+The default separator is \0 if it is not specified. 
+/d Data: Specifies the data for the new entry in the registry.
+
+REG ADD examples
+
+To add a subkey named MySubkey under HKEY_LOCAL_MACHINE\Software, use the following example:
+
+REG ADD HKLM\Software\MySubkey
+
+
+
+To add a new DWORD (32-bit) value entry named AppInfo with the value of 1, use the following example:
+
+REG ADD HKLM\Software\MySubkey /v AppInfo /t REG_DWORD /d 1
+
+To add a new DWORD (32-bit) value entry named AppInfo with value of 1 on a remote computer, use the following example:
+
+REG ADD \\ComputerName\HKLM\Software\MySubkey /v AppInfo /t REG_DWORD /d 1
+
+To add a new Binary Value entry named Data with data of fe340ead, use the following example:
+
+REG ADD HKLM\Software\MySubkey /v Data /t REG_BINARY /d fe340ead
+
+To add a registry entry with multiple values to MySubkey with a value name of MRU of type REG_MULTI_SZ and data of fax\0mail\2\1, use the following example:
+
+REG ADD HKLM\Software\MySubkey /v MRU /t REG_MULTI_SZ /d fax\0mail\2\1
+
+
+
+To add an expanded registry entry to MySubkey with a value name of Path of type REG_EXPAND_SZ and data of %systemroot%, use the following example:
+
+REG ADD HKLM\Software\MySubkey /v Path /t REG_EXPAND_SZ /d ^%systemroot^%
+
+REG DELETE examples
+
+To delete the subkey named MySubkey, use the following example:
+
+REG DELETE HKLM\Software\MySubkey /f
+
+
+
+To delete the subkey named MySubkey on a remote computer, use the following example:
+
+REG DELETE \\ComputerName\HKLM\Software\MySubkey /f
+
+To delete the registry entry named AppInfo within the MySubkey subkey, use the following example:
+
+REG DELETE HKLM\Software\MySubkey /v AppInfo /f
+
+To delete only the registry entries that have no value inside the subkey named MySubkey, use the following example:
+
+REG DELETE HKLM\Software\MySubkey /ve
+
+To delete all the registry entries from the MySubkey subkey, use the following example:
+
+REG DELETE HKLM\Software\MySubkey /va
+
+How to copy registry entries
+
+Syntax
+
+Copy: REG COPY KeyName1 KeyName2 [/s] [/f]
+Command description
+
+KeyName1: Defines the path to the subkey you want to copy. Valid registry key shortcuts include HKLM, HKCU, HKCR, HKU, and HKCC. If you're trying to copy the registry on a remote computer, you can only use these shortcuts: HKLM and HKU. KeyName2: Defines the path to the subkey destination. Valid registry key shortcuts include HKLM, HKCU, HKCR, HKU, and HKCC. If you're trying to copy the registry on a remote computer, you can only use these shortcuts: HKLM and HKU. /s: Copies all subkeys and entries of a particular subkey. /f: Executes the copy command without prompting for confirmation.
+REG COPY examples
+
+To copy all subkeys and values under the key MySubkey1 to the key MySubkey2, use the following example:
+
+REG COPY HKLM\Software\MySubkey1 HKLM\Software\MySubkey2 /s
+
+
+
+To copy all values under the subkey MySubkey1 from a remote computer to the subkey MySubkey2 on the a new computer, use the following example:
+
+REG COPY \\ComputerName\HKLM\Software\MySubkey1 HKLM\Software\MySubkey2
+
+How to export and import registry entries
+
+Syntax
+
+Export: REG EXPORT KeyName FileName [/y] Import: REG IMPORT FileName
+Command description
+
+KeyName: Defines the path to the subkey or entry. Valid registry key shortcuts include HKLM, HKCU, HKCR, HKU, and HKCC. FileName: Specifies the name and path of the .reg file to be exported or imported. /y: Overwrites the registry content without prompting for confirmation.
+REG EXPORT examples
+
+To export all the content within the subkey MySubkey, use the following example:
+
+REG EXPORT HKLM\Software\MySubkey C:\RegKeyBackup.reg
+
+
+
+To export and overwrite any existing file, use the following example:
+
+REG EXPORT HKLM\Software\MySubkey C:\RegKeyBackup.reg /y
+
+REG IMPORT examples
+
+To import all the content, including subkeys, entries, and values within the subkey named MySubkey, use the following example:
+
+REG IMPORT C:\RegKeyBackup.reg
+
+How to save and restore registry entries
+
+Syntax
+
+Save: REG SAVE KeyName FileName [/y] Restore: REG RESTORE KeyName FileName
+Command description
+
+KeyName: Defines the path to the subkey or entry. Valid registry key shortcuts include HKLM, HKCU, HKCR, HKU, and HKCC. If you're trying to edit the registry on a remote computer, you can only use these shortcuts: HKLM and HKU. FileName: Specifies the name and path of the .hiv file to be saved or restored. /y: Overwrites the registry content without prompting for confirmation.
+REG SAVE examples
+
+To save a copy of subkeys, entries, and values within the subkey named MySubkey, use the following example:
+
+REG SAVE HKLM\Software\MySubkey C:\RegKeyBackup.hiv
+
+
+
+To save and overwrite any existing file, use the following example:
+
+REG SAVE HKLM\Software\MySubkey C:\RegKeyBackup.hiv /y
+
+REG RESTORE examples
+
+To restore all the content, including subkeys, entries, and values within the subkey named MySubkey, use the following example:
+
+REG RESTORE HKLM\Software\MySubkey C:\RegKeyBackup.hiv
+
+Wrapping things up
+
+While you can always use the Registry Editor, you'll find that it's sometimes easier and faster to use the reg.exe command-line tool. However, at the end of the day, you will still be editing the Registry, which is dangerous no matter which tool you use.
+
+Also, make sure to double-check your commands before executing, as you can make mistakes. For example, REG ADD HKLM\Sofware\MySubkey is not the same as REG ADD HKLM\Software\MySubkey. A mistake like that might not do anything, or it could wreck your entire system. So be careful.
+
+If you're wondering, yes, there is a big difference between Export and Save. The command EXPORT exports registry content into a text format that you can easily distribute as a .reg file to other computers.
+
+On the other hand, SAVE saves the registry content into a hive file format (.hiv), which preserves ownership and other important information. You should only use this command if you're restoring entries to the same computer.
+
+It's also important to note that while you can use many of these commands on a remote computer, IMPORT and EXPORT only work on a local computer (not over the network).
+
+Although, we're focusing this guide for Windows 10, keep in mind that reg.exe has been part of the operating system for a long time, as such this should also work on Windows 8.1 and Windows 7.
+
+Do you prefer using the Registry Editor or reg.exe to modify the Windows Registry? Tell us in the comments below.

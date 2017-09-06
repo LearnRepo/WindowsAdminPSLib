@@ -12,11 +12,18 @@ $cred = new-object -typename System.Management.Automation.PSCredential -argument
 
 $PathTemp = $args[0];
 $PModule = $PathTemp.split("\")
+$length = $args.length - 1;
+$Arguments = "";
 
+
+for($i = 0; $i -lt $length ; $i = $i + 1)
+{
+ $Arguments = $Arguments + " " + "`""+$args[$i+1] + "`"";
+}
 
 if($PModule.length -gt 1)
 {
-    $UserScriptCaller = ("-file  " + $PathTemp + " " + $args[1] + " " + $args[2]).toString()
+    $UserScriptCaller = ("-file  " + $PathTemp + $Arguments).toString()
     
     # for exit mode uncomment below line make sure no exit mode is commented
     Start-Process powershell -verb runas -ArgumentList $UserScriptCaller
@@ -32,6 +39,6 @@ if($PModule.length -gt 1)
 else
 {
     $Path = @(Get-Location)[0].toString()
-    $UserScriptCaller = ("-file  " + $Path + "\" + $PModule[$PModule.length - 1]  + " " + $args[1] + " " + $args[2]).toString();
+    $UserScriptCaller = ("-file  " + $Path + "\" + $PModule[$PModule.length - 1]  + $Arguments).toString();
     Start-Process powershell -verb runas -ArgumentList "-noexit", $UserScriptCaller
 }

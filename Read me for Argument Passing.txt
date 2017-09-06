@@ -2,6 +2,8 @@
 
 Posted on 2013/08/23 by rcmtech(https://rcmtech.wordpress.com/2013/08/23/powershell-and-double-quotes-on-the-command-line/#comment-5839)
 
+Note : Powershell escape sequence character is tick (`)
+
 I’ve had issues passing in parameters to a PowerShell script that need double quotes around them, due to containing a space. Consider the following very basic PowerShell script:
 
 param([string]$Something = "")
